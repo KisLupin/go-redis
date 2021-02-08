@@ -12,7 +12,7 @@ func checkError(err error) {
 	}
 }
 
-type postCard struct {
+type PostCard struct {
 	Title string `redis:"title"`
 	Creator string `redis:"creator"`
 	MembershipFee float32 `redis:"membership_fee"`
@@ -58,21 +58,21 @@ func main() {
 	fmt.Println("Padcast fee", fee)
 	value, err := redis.Values(conn.Do("HGetAll", "podcard"))
 
-	var p postCard
+	var p PostCard
 	err = redis.ScanStruct(value, &p)
 	checkError(err)
 	fmt.Printf("PostCard value: %+v\n", p)
 
-	//data := postCard{
-	//	Title: "test",
-	//	Creator: "lupin",
-	//	MembershipFee: 3.33,
-	//}
-	//_, err = conn.Do(
-	//	"HSet",
-	//	redis.Args{}.Add("test").AddFlat(data),
-	//)
-	//
-	//checkError(err)
-	//fmt.Printf("PostCard test value: %+v\n", p)
+	data := PostCard{
+		Title: "test",
+		Creator: "lupin",
+		MembershipFee: 3.33,
+	}
+	_, err = conn.Do(
+		"HSet",
+		redis.Args{}.Add(data.Title).AddFlat(data)...
+	)
+
+	checkError(err)
+	fmt.Printf("PostCard test value: %+v\n", p)
 }
